@@ -1,0 +1,12 @@
+#!/bin/bash
+# Program to check that mullvad is in use
+# Martin Häggström 180908
+
+MULLVAD_DNS_SERVER=193.138.218.169
+
+DNS_SERVER=`curl -s https://am.i.mullvad.net/`
+
+if [ "${DNS_SERVER}" != "$MULLVAD_DNS_SERVER" ]
+then
+	echo "mullvad_is_not_working:${DNS_SERVER}" | wall
+fi
