@@ -3,10 +3,12 @@
 # Martin Häggström 180908
 
 MULLVAD_DNS_SERVER=193.138.218.169
+MULLVAD_COUNTRY=Sweden
 
-DNS_SERVER=`curl -s https://am.i.mullvad.net/`
+#DNS_SERVER=`curl -s https://am.i.mullvad.net/`
+COUNTRY=`curl https://am.i.mullvad.net/country`
 
-if [ "${DNS_SERVER}" != "$MULLVAD_DNS_SERVER" ]
+if [ "${COUNTRY}" != "$MULLVAD_COUNTRY" ]
 then
-	echo "mullvad_is_not_working:${DNS_SERVER}" | wall
+	echo "mullvad_is_not_working:${COUNTRY}" | wall
 fi
