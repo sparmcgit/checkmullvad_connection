@@ -1,7 +1,6 @@
 #!/bin/bash
-# Program to check that mullvad is in use
+# Program to check that mullvad is in use and is working
 # Martin Häggström 180908
-# restart by sudo systemctl restart openvpn@mullvad_se.service
 
 MULLVAD_DNS_SERVER=193.138.218.169
 MULLVAD_COUNTRY=Sweden
@@ -10,16 +9,52 @@ TIMEOUT=3
 CURL_COMMAND="curl -m $TIMEOUT -s"
 MULLVAD_URL=https://am.i.mullvad.net
 
-# first check that TIMEOUT is not exceeded
-COUNTRY=`${CURL_COMMAND} ${MULLVAD_URL}/country`
+# Get the country where the vpn tunnel ends
+function Country() {
 
-if [ "${COUNTRY}" != "$MULLVAD_COUNTRY" ]
-then
-	echo "mullvad_is_not_working COUNTRY:${COUNTRY}" | wall
-fi
+	local COUNTRY=`${CURL_COMMAND} ${MULLVAD_URL}/country`
+	echo "$COUNTRY"
+}
 
-BLACKLISTED=`${CURL_COMMAND} ${MULLVAD_URL}/json | jq .blacklisted.blacklisted`
-if [ "$BLACKLISTED" != "$MULLVAD_BLACKLISTED" ]
-then
-	echo "mullvad_is_not_working BLACKLISTED:${BLACKLISTED}" | wall
-fi
+# Check if the ipaddress i blacklisted
+function Blacklisted() {
+
+	local BLACKLISTED=`${CURL_COMMAND} ${MULLVAD_URL}/json | jq .blacklisted.blacklisted`
+	echo "$BLACKLISTED"
+}
+
+# call the functions and check what the should return and the actual returned value
+for callFunction in Country Blacklisted
+do
+
+	SHOULDRETURN=''
+	CALLEDFUNCTION=$callFunction
+	RETURNVALUE=`$callFunction`
+
+	if [ "$CALLEDFUNCTION" = "Country" ]
+	then
+		SHOULDRETURN=$MULLVAD_COUNTRY
+	else
+		SHOULDRETURN=$MULLVAD_BLACKLISTED
+	fi
+
+	# loop 10 times to check the status of mullvad
+	for f in {1..10}
+	do
+
+		if [ "${RETURNVALUE}" = "$SHOULDRETURN" ]
+		then
+			break
+		else
+			# restart mullvad if the returned value is not the expected
+			systemctl restart openvpn@mullvad_se.service
+			sleep 2
+		fi
+
+		# the loop has reached the last entry and mullvad is not working
+		if [ $f = 10 ]
+		then
+			echo "mullvad_is_not_working $SHOULDRETURN:${RETURNVALUE}" | wall
+		fi
+	done
+done
