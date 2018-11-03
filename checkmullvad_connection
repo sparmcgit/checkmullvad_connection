@@ -17,7 +17,7 @@ function Country() {
 	echo "$COUNTRY"
 }
 
-# Check if the ipaddress i blacklisted
+# Check if the ipaddress is blacklisted
 function Blacklisted() {
 
 	local BLACKLISTED=`${CURL_COMMAND} ${MULLVAD_URL}/json | jq .blacklisted.blacklisted`
