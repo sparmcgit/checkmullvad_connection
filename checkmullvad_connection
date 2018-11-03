@@ -5,10 +5,11 @@
 [ "$1"x = x ] && { echo "Pass parameter country"; exit 1; }
 
 MULLVAD_COUNTRY=$1
+MULLVAD_SERVICE=$2
 MULLVAD_BLACKLISTED=false
+MULLVAD_URL=https://am.i.mullvad.net
 CURL_TIMEOUT=3
 CURL_COMMAND="curl -m $CURL_TIMEOUT -s"
-MULLVAD_URL=https://am.i.mullvad.net
 
 # Get the country where the vpn tunnel ends
 function Country() {
@@ -47,7 +48,8 @@ do
 			break
 		else
 			# restart mullvad as the returned value is not the expected
-			systemctl restart openvpn@mullvad_se.service
+			#systemctl restart openvpn@mullvad_se.service
+			systemctl restart $MULLVAD_SERVICE
 			sleep 3
 		fi
 
