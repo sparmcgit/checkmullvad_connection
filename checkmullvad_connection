@@ -26,6 +26,21 @@ function Blacklisted() {
 	echo "$BLACKLISTED"
 }
 
+function Service() {
+
+	systemctl -l | awk '{print $1}' | grep -qE '^'$MULLVAD_SERVICE'$'
+	echo "$?"
+
+}
+
+# Check if MULLVAD_SERVICE exists.
+RET_MULLVAD_SERVICE=`Service`
+if [ "$RET_MULLVAD_SERVICE" != 0 ]
+then
+	echo "$MULLVAD_SERVICE doesn't exist" | wall
+	exit 1
+fi
+
 # call the functions and check what they should return and the actual returned value
 for callFunction in Country Blacklisted
 do
