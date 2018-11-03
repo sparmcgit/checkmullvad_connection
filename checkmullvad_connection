@@ -48,7 +48,6 @@ do
 			break
 		else
 			# restart mullvad as the returned value is not the expected
-			#systemctl restart openvpn@mullvad_se.service
 			systemctl restart $MULLVAD_SERVICE
 			sleep 3
 		fi
