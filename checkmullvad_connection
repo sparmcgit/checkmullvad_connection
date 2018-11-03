@@ -3,6 +3,7 @@
 # Martin Häggström 180908
 
 [ "$1"x = x ] && { echo "Pass parameter country"; exit 1; }
+[ "$2"x = x ] && { echo "Pass parameter service"; exit 1; }
 
 MULLVAD_COUNTRY=$1
 MULLVAD_SERVICE=$2
