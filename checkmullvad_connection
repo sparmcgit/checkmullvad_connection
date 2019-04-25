@@ -64,7 +64,7 @@ do
 			break
 		else
 			# restart mullvad as the returned value is not the expected
-			systemctl restart $MULLVAD_SERVICE
+			systemctl restart $MULLVAD_SERVICE resolvconf.service systemd-resolved.service
 			sleep 3
 		fi
 
